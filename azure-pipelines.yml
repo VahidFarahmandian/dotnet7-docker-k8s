@@ -1,0 +1,35 @@
+trigger:
+- main
+
+pool:
+  name: vahid-pool
+steps:
+- task: DotNetCoreCLI@2
+  displayName: publish app
+  inputs:
+    command: 'publish'
+    arguments: -c Release
+    publishWebProjects: false
+    projects: 'Sample/Sample.csproj'
+    zipAfterPublish: false
+    modifyOutputPath: false
+
+- task: CmdLine@2
+  displayName: build dockler image
+  inputs:
+    script: 'docker build -t mysample -f Dockerfile .'
+    workingDirectory: '$(Build.SourcesDirectory)/Sample'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)/Sample'
+    Contents: '**/k8s.deploy.yaml'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    CleanTargetFolder: true
+    OverWrite: true
+    flattenFolders: true
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

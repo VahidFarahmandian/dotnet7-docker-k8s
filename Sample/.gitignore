@@ -1,0 +1,9 @@
+/**/*.user
+/**/obj
+/**/bin
+/**/packages
+/**/.vs
+
+/**/*.suo
+/**/*.js.map
+/**/*.css.map

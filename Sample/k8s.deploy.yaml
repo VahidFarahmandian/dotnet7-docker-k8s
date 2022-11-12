@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysample
+  labels:
+    app: my-sample-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: mysample
+  template:
+    metadata:
+      labels:
+        app: my-sample-app
+        service: mysample
+    spec:
+      containers:
+        - name: mysample
+          image: mysample
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysample
+  labels:
+    app: my-sample-app
+    service: mysample
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 11000
+      targetPort: 80
+      protocol: TCP
+  selector:
+    service: mysample
